@@ -13,7 +13,6 @@ import gradio as gr
 from openai import OpenAI
 import json
 
-# Retrieve the keys for connection
 
 os.chdir("C:\\PythonStuff\\keys")
 cwd = os.getcwd() 
@@ -23,15 +22,7 @@ with open("nebius_api_key", "r") as file:
 
 os.environ["NEBIUS_API_KEY"] = nebius_api_key
 
-# Nebius connection Setip
-'''
-# Instead, wrap it via LangChain’s LLM wrapper that supports custom endpoints.
-llm = OpenAI(
-    temperature=0.7,
-    model_name="meta-llama/Llama-3.3-70B-Instruct",  # same as your llama_70b_model
-    openai_api_key=nebius_api_key,
-    base_url="https://api.studio.nebius.ai/v1/"      # Nebius endpoint
-    '''
+# Nebius uses the same OpenAI() class, but with additional details
 nebius_client = OpenAI(
     base_url="https://api.studio.nebius.ai/v1/",
     api_key=os.environ.get("NEBIUS_API_KEY"),
