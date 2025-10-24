@@ -13,9 +13,31 @@ Every project here is guided by one question: “How can LLMs make human work sm
 
 🚀 **Featured Themes**
 
-🧠 **LLM Workflows & Agents:** experimenting with LangChain, and custom tool-calling frameworks
+- **LLM Workflows & Agents:** experimenting with LangChain, and custom tool-calling frameworks
 
-🔍 **Vectorized RAG Pipelines:** building scalable retrieval systems using embeddings, Chroma/FAISS, vectorizing and retireval with cloud host LLM or local LLM (like Llama CPP and Ollama) for privacy
+- **Vectorized RAG Pipelines:** building scalable retrieval systems using embeddings, Chroma/FAISS, vectorizing and retireval with cloud host LLM or local LLM (like Llama CPP and Ollama) for privacy
 
-🧩 **Synthetic Data Generation:** creating realistic datasets for payments, treasury, and automation testing
+- **Synthetic Data Generation:** creating realistic datasets for payments, treasury, and automation testing
 
+
+
+<ins>**00-ChatInterface.py**</ins>
+
+LLM Chat Interface is a lightweight, customizable chat UI built with Gradio and powered by Nebius AI’s OpenAI-compatible API.
+It enables seamless interaction with large language models like Llama 3.3 70B, Gemma 2 9B, and DeepSeek V3, supporting both streaming and non-streaming responses.
+
+**Features**
+
+- Multi-model flexibility: Easily switch between Llama, Gemma, Qwen, DeepSeek, and more.
+- Real-time streaming replies: Token-by-token updates for a natural chat flow.
+- Customizable UI: Soft blue theme with rounded message bubbles and interactive buttons.
+- Easy integration: Built entirely in Python with gradio and openai SDK — no complex setup.
+- Secure API handling: Automatically loads API keys from a local environment file.
+
+**How It Works**
+
+- Launches a browser-based chat interface titled “🛫 LLM Chat Interface”.
+- Sends user messages through Nebius’s OpenAI endpoint.
+- Streams responses dynamically using the selected model and parameters (temperature, max_tokens, etc.).
+
+This project is experimenting with LLM chatbots, custom AI assistants, or embedded conversational UIs that run locally or on the web.
