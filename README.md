@@ -44,7 +44,7 @@ This project is experimenting with LLM chatbots, custom AI assistants, or embedd
 ## 09-ToolCall-ConcertTicketAssistant.py
 
 AITICKETS is an interactive AI-powered ticketing portal that simulates a smart concert-ticket customer service assistant.
-Built with Gradio and the Nebius OpenAI-compatible API, it demonstrates manual tool-calling logic — no LangChain required — to perform reasoning, function execution, and multi-turn dialogue.
+Built with Gradio and the Nebius OpenAI-compatible API, it demonstrates manual tool-calling logic and no LangChain required to perform reasoning, function execution, and multi-turn dialogue.
 
 **Key Capabilities**
 
