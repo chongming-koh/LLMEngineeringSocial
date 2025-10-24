@@ -45,7 +45,7 @@ def chat(message, history,
          client=nebius_client,
          max_tokens=2056,
          temperature=0.7,
-         model=gemma_9b_model,
+         model=llama_70b_model,
          use_stream=True):
     
     #system_message = "You are a helpful assistant that answers questions using context if provided."
@@ -135,7 +135,7 @@ button:hover, .gr-button:hover {
 gr.ChatInterface(
     fn=chat,
     type="messages",
-    title="🛫 LLM Chat Interface",
+    title="LLM Chat Interface",
     description="Ask about code or a simple conversation",
     theme="soft",
     css=custom_css,
