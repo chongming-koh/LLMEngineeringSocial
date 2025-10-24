@@ -62,9 +62,9 @@ Built with Gradio and the Nebius OpenAI-compatible API, it demonstrates manual t
 
 - Uses OpenAI.chat.completions.create() with built-in tool definitions and calls.
 
-- Demonstrates structured reasoning loops — initial LLM reply → tool call → response integration → final assistant reply.
+- Demonstrates structured reasoning loops starting with initial LLM reply → tool call → response integration → final assistant reply.
 
-- Fully self-contained Python script — no external frameworks beyond gradio and openai.
+- Fully self-contained Python script with no external frameworks beyond gradio and openai.
 
 **Perfect For Exploring**
 
