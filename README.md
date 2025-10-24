@@ -49,27 +49,65 @@ Built with Gradio and the Nebius OpenAI-compatible API, it demonstrates manual t
 **Key Capabilities**
 
 - Smart Ticket Queries: Instantly fetch concert ticket prices for global destinations.
-
 - Automated Booking: Generate live booking confirmations and receipts.
-
 - Currency Conversion: Convert USD/EUR prices to SGD using predefined exchange rates.
-
 - Reasoning & Tool-Calling: Handles tool invocation manually via JSON parsing for clear visibility into the LLM’s decision flow.
-
 - Custom Chat UI: Baby-blue themed interface with clean rounded chat bubbles, styled for a modern conversational experience.
 
 **Tech Highlights**
 
 - Uses OpenAI.chat.completions.create() with built-in tool definitions and calls.
-
 - Demonstrates structured reasoning loops starting with initial LLM reply → tool call → response integration → final assistant reply.
-
 - Fully self-contained Python script with no external frameworks beyond gradio and openai.
 
 **Perfect For Exploring**
 
 - How to build tool-using LLM agents without LangChain.
-
 - Designing custom AI customer service systems.
-
 - Building branded chat interfaces for AI-powered commerce platforms.
+
+## 16-LocalRAGPipeline-LlamaCPP-Ollama-Chroma.py
+
+**Local RAG Pipeline with LlamaCPP + Ollama + Chroma**
+
+Local RAG Pipeline is a Retrieval-Augmented Generation (RAG) framework that runs entirely on your local machine, ensuring complete data privacy — ideal for organizations handling sensitive or confidential information.
+
+This project demonstrates how to build a self-contained, private AI knowledge assistant using:
+
+- LlamaCPP for on-device large language model inference
+- Ollama for local embeddings
+- Chroma as a persistent vector database
+- Gradio chat interface for smooth local interactions
+
+**Key Highlights**
+
+- 100% Offline & Private: No cloud APIs, all computation stays on your machine.
+- Local Knowledge Base: Automatically loads and vectorizes PDFs and Markdown files from the knowledge-base folder.
+- Fast Retrieval: Uses Chroma’s local vector store for instant semantic search.
+- End-to-End RAG Flow: Combines retrieval, reasoning, and conversational memory with Conversational Retrieval Chain.
+- Friendly Interface: Launches a Gradio-powered chat window for local Q&A.
+
+**Perfect For**
+
+- Organizations prioritizing data security and compliance
+- Wanting to explore RAG pipelines without cloud dependencies
+
+## 16-RagPipelineWithCloudLLM.py
+
+**Cloud-Hosted RAG Pipeline with Nebius + Chroma + Llama**
+
+Cloud RAG Pipeline showcases how to build a Retrieval-Augmented Generation (RAG) system using hosted LLMs and embedding models for fast, factual knowledge retrieval.
+It connects your local knowledge base with Nebius-hosted AI models to deliver cloud-scale vectorization, reasoning, and multilingual understanding.
+
+**Key Capabilities**
+
+- Hybrid Intelligence: Combines Nebius Embeddings (BAAI/bge-multilingual-gemma2) with Meta-Llama-3.1-8B-Instruct for contextual and multilingual reasoning.
+- Automated Knowledge Ingestion: Scans PDFs and Markdown files, splits them into semantic chunks, and stores vectors in ChromaDB.
+- Fact Retrieval at Scale: Embeddings and retrieval are computed in the cloud for better accuracy and performance.
+- Conversational Memory: Powered by Conversational Retrieval Chain for multi-turn contextual Q&A.
+- Gradio Chat Interface: Provides a clean, ready-to-use web UI for interactive exploration.
+
+**Why It Matters**
+
+- Delivers enterprise-grade scalability while maintaining local control of documents.
+- Ideal for teams building factual chat assistants, document intelligence systems, or knowledge retrieval bots that leverage cloud compute without exposing private data content.
