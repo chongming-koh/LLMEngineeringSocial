@@ -36,7 +36,7 @@ It enables seamless interaction with large language models like Llama 3.3 70B, G
 
 **How It Works**
 
-- Launches a browser-based chat interface titled “🛫 LLM Chat Interface”.
+- Launches a browser-based chat interface titled “LLM Chat Interface”.
 - Sends user messages through Nebius’s OpenAI endpoint.
 - Streams responses dynamically using the selected model and parameters (temperature, max_tokens, etc.).
 
