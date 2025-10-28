@@ -40,6 +40,19 @@ It enables seamless interaction with large language models like Llama 3.3 70B, G
 
 This project is experimenting with LLM chatbots, custom AI assistants, or embedded conversational UIs that run locally or on the web.
 
+## 00-ChatInterface-Gradio-Chatbot.py
+Customizable, multi-model chat interface to dynamically select models, chat interactively, and completely reset the chat context when switching models
+
+**Features**
+- Full manual control over chat state using gr.State()
+- Model switching with clean reset for both UI and memory cleared instantly
+- Drop-down model selector to test multiple Nebius-hosted LLMs easily
+
+**Highlights**
+
+- Replaced gr.ChatInterface (abstract) with gr.Chatbot + State + Textbox pattern for fine-grained control.
+- Added on_model_change() to automatically clear history and UI when changing models.
+- Introduced to_oai_messages function helper to format chat history for OpenAI/Nebius-compatible API calls.
 
 ## 09-ToolCall-ConcertTicketAssistant.py
 
