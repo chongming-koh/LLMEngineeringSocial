@@ -48,9 +48,8 @@ def to_oai_messages(history_messages, user_message):
     return msgs
 
 # --------------------
-# Update from gr.ChatInterface to gr.Chatbot
-# Initially I'm using ChatInterface and I cant resolve this error <AttributeError: 'ChatInterface' object has no attribute 'state'>
-# Hence, I stop relying on ChatInterface’s hidden state and manage the history yourself with a gr.State
+# Update from basic chat function and change name to send to differentiate that I am not using gr.ChatInterface but gr.Chatbot 
+# Why change is to allow myself to manage the history state and delete when a new model is choosen
 # --------------------
 def send(user_message, history_messages, model_name, max_tokens=2056, temperature=0.7):
     print("\n==============================")
@@ -59,18 +58,21 @@ def send(user_message, history_messages, model_name, max_tokens=2056, temperatur
     print(f"Incoming history: {history_messages}")
     print(f"New user message: {user_message}")
     print("==============================\n")
-
+    
+    # Look for my selected model. If it can’t find it, it uses the first one in the model list as a fallback
     model_id = model_list.get(model_name, list(model_list.values())[0])
     #print(f"\nModel currently using: {model_id}\n")
-
+    
+    # turn my chat history into the LLM-style format that the Nebius API can understand
     api_messages = to_oai_messages(history_messages, user_message)
 
-    # add user + empty assistant
+    # add user + empty assistant to chat history
+    #The empty assistant message will later be filled in token-by-token as the model streams its response later.
     history_messages = history_messages + [
         {"role": "user", "content": user_message},
         {"role": "assistant", "content": ""},
     ]
-    yield history_messages, history_messages, ""  # (chatbot, state, cleared textbox)
+    yield history_messages, history_messages, ""  # Updates the chat window, then update the state (history). Clears the textbox input.
 
     stream = nebius_client.chat.completions.create(
         model=model_id,
@@ -86,7 +88,7 @@ def send(user_message, history_messages, model_name, max_tokens=2056, temperatur
         if not delta:
             continue
         partial += delta
-        history_messages[-1]["content"] = partial
+        history_messages[-1]["content"] = partial # This line later fills up that empty assistant message token-by-token!
         yield history_messages, history_messages, ""
 
     yield history_messages, history_messages, ""
@@ -95,7 +97,7 @@ def send(user_message, history_messages, model_name, max_tokens=2056, temperatur
 # reset function that clears the chat and memory whenever I pick a new model to give a completely fresh start
 # --------------------
 def on_model_change(new_model):
-    print(f"🔄 Model changed to: {new_model} — clearing UI + state")
+    print(f" Model changed to: {new_model} — clearing UI + state")
     return [], []   # clears Chatbot (type='messages') and our State
 
 # --------------------
@@ -130,3 +132,99 @@ with gr.Blocks(css=custom_css, theme="soft") as demo:
     model_selector.change(on_model_change, inputs=model_selector, outputs=[chatbot, state])
 
 demo.launch(debug=True, inbrowser=True)
+
+
+
+'''
+def chat(message, history,
+         model_name,
+         client=nebius_client,
+         max_tokens=2056,
+         temperature=0.7,
+         use_stream=True):
+    
+    # Map display name to actual model ID
+    model = model_list.get(model_name, list(model_list.values())[0])
+    print(f"\nModel currently using:{model}\n")  
+    
+    messages = [{"role": "system", "content": system_prompt}] + history + [{"role": "user", "content": message}]
+
+    if use_stream:
+        stream = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            stream=True
+        )
+
+        response = ""
+        for chunk in stream:
+            delta = chunk.choices[0].delta.content or ""
+            response += delta
+            yield response
+    else:
+        completion = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            stream=False
+        )
+        response = completion.choices[0].message.content
+        yield response  
+
+
+# ==============================================
+# Clear chat history when model changes
+# ==============================================
+def clear_history_on_model_change(selected_model):    
+    print(f"Model changed to: {selected_model} — clearing chat history.")
+    # Clear both the chat messages shown in UI and the internal history state
+    return gr.update(value=[]), gr.update(value=[])   # 
+
+
+# ==============================================
+# Gradio UI
+# ==============================================
+custom_css = """
+body {
+    background-color: #b3daff; /* baby blue */
+}
+
+.gradio-container {
+    background-color: #b3daff !important;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+"""
+
+with gr.Blocks(css=custom_css, theme="soft") as demo:
+    gr.Markdown("## LLM Chat Interface")
+    gr.Markdown("Select a model and start chatting below.")
+
+    # Dropdown for model selection
+    model_selector = gr.Dropdown(
+        label="Select Model",
+        choices=list(model_list.keys()),
+        value="Llama 3.3 70B",
+        interactive=True,
+    )
+
+    # Chat Interface
+    chat_ui = gr.ChatInterface(
+        fn=chat,
+        additional_inputs=[model_selector],
+        type="messages",
+        title="LLM Chat Interface",
+        description="Ask about code or have a conversation with the model you select.",
+    )
+
+    # UPDATED: clear both UI and state when model changes
+    model_selector.change(
+        fn=clear_history_on_model_change,
+        inputs=model_selector,
+        outputs=[chat_ui.chatbot, chat_ui.state]       # clears visible chat + backend history
+    )
+
+demo.launch(debug=True, inbrowser=True)
+'''
