@@ -36,14 +36,33 @@ DeepSeek_V33024 ="deepseek-ai/DeepSeek-V3-0324"
 openai_20b = "openai/gpt-oss-20b"
 Hermes_4_70B_model ="NousResearch/Hermes-4-70B"
 
-system_prompt = "You are an intelligent and courteous assistant representing AITICKETS, a global ticketing service and solutions provider \
-    specializing in concert tickets for events worldwide. \
-    Answer general questions normally. \
-    ONLY call get_ticket_price if the user explicitly asks about the ticket price for a specific concert event destination. \
-    Call book_tickets if the user asks to book or purchase tickets. \
-    Call convert_currency if the user asks to convert prices or currencies. \
-    Do NOT call any tools for unrelated questions like greetings, names, or general chat. \
-    Keep answers short and courteous."
+system_prompt = (
+    "You are an intelligent and courteous assistant representing AITICKETS, a global ticketing service "
+    "and solutions provider specializing in concert tickets for events worldwide.\n"
+    "\n"
+    "ADDITIONAL ROLE — FRIENDLY SALESPERSON:\n"
+    "• Begin with 4–5 short, casual lines to build rapport (e.g. preferred dates, city, or budget). Don't try too hard to sell\n"
+    "• Naturally guide the user toward discovering and purchasing concert tickets. Be upbeat and helpful, never pushy.\n"
+    "• When interest is shown, suggest options (cities supported: London, Paris, Tokyo, Berlin), then offer to check prices or book.\n"
+    "\n"
+    "TOOL-CALLING RULES (MANDATORY):\n"
+    "• ONLY call get_ticket_price if the user explicitly asks about the ticket price for a specific concert event destination.\n"
+    "• Call book_tickets if the user asks to book or purchase tickets (ensure you have destination_city and number_of_tickets).\n"
+    "• Call convert_currency ONLY if the user asks to convert prices or currencies AND you have ALL THREE values:\n"
+    "  amount, from_currency, and to_currency (ISO codes: USD, EUR, SGD).\n"
+    "  If any of the three are missing or unclear, ask ONE short clarifying question before calling.\n"
+    "\n"
+    "ARGUMENT CAPTURE FOR convert_currency (EXAMPLES):\n"
+    "• 'Convert USD 100 to SGD' → amount=100, from_currency=USD, to_currency=SGD.\n"
+    "• 'How much EUR do I get if I sell SGD 500 to buy EUR' → amount=500, from_currency=SGD, to_currency=EUR.\n"
+    "• 'Exchange SGD75 to USD' → amount=75, from_currency=SGD, to_currency=USD.\n"
+    "If you are unsure whether you captured all 3 values correctly, confirm with the user first.\n"
+    "\n"
+    "BEHAVIOR:\n"
+    "• Answer general questions normally.\n"
+    "• Do NOT call any tools for unrelated greetings or general chit-chat.\n"
+    "• Keep answers short, warm, and courteous.\n"
+    )
 
 print(system_prompt)
 
@@ -51,7 +70,13 @@ print(system_prompt)
 ticket_prices = {"london": 1040, "paris": 1170, "tokyo": 1820, "berlin": 650}
 
 # Currency conversion rates
-conversion_rates = {"USD": 1.30, "EUR": 1.50}
+#conversion_rates = {"USD": 1.30, "EUR": 1.50}
+conversion_rates = {
+    ("USD", "SGD"): 1.3,
+    ("EUR", "SGD"): 1.5,
+    ("SGD", "USD"): 0.769230,
+    ("SGD", "EUR"): 0.666667,
+}
 
 # ==============================================
 # 1. Functions to call
@@ -89,7 +114,7 @@ def book_tickets(destination_city, number_of_tickets):
         f"Price per Ticket: ${format_currency(ticket_prices[city])} SGD\n"
         f"Total Amount: ${format_currency(total_price)} SGD\n"
         f"---------------------------------\n"
-        f"Thank you for choosing FlightAI. Have a pleasant journey!"
+        f"Thank you for choosing AITICKETS. Have a pleasant journey!"
     )
 
     return {
@@ -99,7 +124,39 @@ def book_tickets(destination_city, number_of_tickets):
         "receipt": receipt
     }
 
+def convert_currency(amount, from_currency, to_currency):
+    from_ccy = str(from_currency).upper()
+    to_ccy = str(to_currency).upper()
+    print(f"Tool convert_currency called: {amount} {from_ccy} -> {to_ccy}")
 
+    try:
+        amount = float(amount)  # ensure numeric conversion
+    except ValueError:
+        return {"error": "Amount must be a number."}
+
+    rate = conversion_rates.get((from_ccy, to_ccy))
+    if rate is None:
+        return {"error": "Unsupported currency pair. Supported pairs: USD↔SGD, EUR↔SGD."}
+
+    converted = amount * rate
+    receipt = (
+        f"\nCurrency Conversion Receipt\n"
+        f"---------------------------------\n"
+        f"Amount: {format_currency(amount)} {from_ccy}\n"
+        f"Conversion Rate: 1 {from_ccy} = {rate} {to_ccy}\n"
+        f"Converted Amount: {format_currency(converted)} {to_ccy}\n"
+        f"---------------------------------\n"
+        f"Thank you for using AITICKETS Currency Converter."
+    )
+    return {
+        "amount_converted": round(converted, 2),
+        "rate": rate,
+        "from_currency": from_ccy,
+        "to_currency": to_ccy,
+        "receipt": receipt,
+    }
+
+'''
 def convert_currency(amount, from_currency):
     print(f"Tool convert_currency called: {amount} {from_currency} -> SGD")
     try:
@@ -117,7 +174,7 @@ def convert_currency(amount, from_currency):
             f"Conversion Rate: 1 {from_currency.upper()} = {rate} SGD\n"
             f"Converted Amount: {format_currency(converted)} SGD\n"
             f"---------------------------------\n"
-            f"Thank you for using FlightAI Currency Converter."
+            f"Thank you for using AITICKETS Currency Converter."
         )
         return {
             "amount_sgd": round(converted, 2),
@@ -126,6 +183,7 @@ def convert_currency(amount, from_currency):
         }
     else:
         return {"error": "Unsupported currency."}
+'''
 
 # ==============================================
 # 2. Setting up the tool definitions
@@ -165,7 +223,7 @@ convert_function = {
             "amount": {"type": "number", "description": "Amount to convert."},
             "from_currency": {"type": "string", "description": "Currency code: USD or EUR."},
         },
-        "required": ["amount", "from_currency"]
+        "required": ["amount", "from_currency", "to_currency"]
     }
 }
 
@@ -212,7 +270,7 @@ def chat(message, history,
          system_prompt=system_prompt,
          max_tokens=1048,
          client=nebius_client,
-         model=llama_70b_model,
+         model=Qwen2_5_72B_model,
          temperature=0.7):
 
     messages = [{"role": "system", "content": system_prompt}] + history + [{"role": "user", "content": message}]
@@ -229,13 +287,14 @@ def chat(message, history,
 
     if completion.choices[0].finish_reason == "tool_calls":
         message = completion.choices[0].message
+        print(f"\n tool call message: {message}\n")
         print("Model decided to call a tool!")
         tool_response = handle_tool_call(message)
         messages.append(message)
         messages.append(tool_response)
         #Make a second call to the model,  asking it to continue the conversation using the function’s result in JSON
         completion = client.chat.completions.create(model=model, messages=messages)
-        print("🗣️ Final assistant reply:", completion.choices[0].message.content)
+        print("Final assistant reply:", completion.choices[0].message.content)
 
     return completion.choices[0].message.content
 
