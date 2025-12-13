@@ -12,7 +12,7 @@ import glob
 from openai import OpenAI
 import gradio as gr
 from tqdm import tqdm 
-# imports for langchain and Chroma and plotly
+# imports for langchain and Chroma
 
 from langchain_community.document_loaders import DirectoryLoader, TextLoader, PyPDFLoader
 from langchain_text_splitters import CharacterTextSplitter
@@ -46,7 +46,7 @@ Hermes_4_70B_model ="NousResearch/Hermes-4-70B"
 db_name = "vector_db"
 
 # ==============================================
-# 1. Document Loading (PDF + TXT) with Progress Bar
+# 1. Document Loading (PDF + TXT)
 # ==============================================
 
 knowledge_base_path = "knowledge-base"
@@ -114,6 +114,8 @@ print(f"The vectors have {dimensions:,} dimensions\n")
 # ==============================================
 # 3a) Load existing Vector data created by embedded LLM previously from Chroma store
 # When i do not want to go through the vectorization again.
+# This block is commented to avoid running the code block. Uncomment it to allow the logic to read from Chroma
+# Comment Code block 1 to 3 if running Block 3a
 # ==============================================
 '''
 # Instantiate an object named embeddings
@@ -128,7 +130,7 @@ vectorstore = Chroma(
     embedding_function=embeddings
 )
 
-print("✅ Loaded existing vectorstore!")
+print("Loaded existing vectorstore!")
 print(f"Stored documents: {vectorstore._collection.count()}")
 
 # Get one vector and find how many dimensions it has
