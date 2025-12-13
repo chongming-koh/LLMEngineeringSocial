@@ -156,7 +156,7 @@ llm = ChatNebius(
 memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
 
 # the retriever is an abstraction over the VectorStore that will be used during RAG
-retriever = vectorstore.as_retriever()
+retriever = vectorstore.as_retriever(search_kwargs={"k": 15})
 
 # putting it together: set up the conversation chain with the GPT 4o-mini LLM, the vector store and memory
 conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=retriever, memory=memory)
@@ -164,7 +164,7 @@ conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=re
 # set up a new conversation memory for the chat
 memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
 
-# putting it together: set up the conversation chain with the GPT 4o-mini LLM, the vector store and memory
+# putting it together: set up the conversation chain with the LLM, the vector store and memory
 conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm, retriever=retriever, memory=memory)
 
 # ==============================================
