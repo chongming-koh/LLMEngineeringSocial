@@ -32,7 +32,7 @@ Qwen2_5_72B_model = "Qwen/Qwen2.5-72B-Instruct"
 DeepSeek_V33024 ="deepseek-ai/DeepSeek-V3-0324"
 openai_20b = "openai/gpt-oss-20b"
 Hermes_4_70B_model ="NousResearch/Hermes-4-70B"
-Qwen_Qwen3_Coder="Qwen/Qwen3-Coder-480B-A35B-Instruct"
+#Qwen_Qwen3_Coder="Qwen/Qwen3-Coder-480B-A35B-Instruct"
 
 system_prompt = "You are a helpful assistant"
 
